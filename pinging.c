@@ -9,39 +9,65 @@
  *               validHostNames.txt
  *
  *               validHostNames.txt contains hosts than can be pinged
+ *
+ *               Accepts other files from the command line. 
+ *               Type: "pingable myFile.txt" to run this program with
+ *               the input file called "myFile.txt"
  */
+
+#ifdef _WIN32
+#include <windows.h>
 #include <stdio.h>
+#include <tchar.h>
+
+#define DIV 1048576 
+#define WIDTH 7
+#endif
+
+#ifdef linux
+#include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#endif
+
 #include <stdbool.h>
 
-bool pinging(char*);
+bool pingable(char*);
 
 int main(int argc, char *argv[]){
     unsigned char IP[30];
+	
+	const char* defaultInput = "inputHostNames.txt";
 
 
-    FILE *inputFile, *outputFile;
-    /*
-     * TODO:
-     * implement so if one provides a file through command line,
-     * it overrides the standard input file
-     */
+    FILE *inputFile, *outputFile, *unpingable;
 
-    /*inputFile = fopen(argv[1], "r");*/
-    inputFile = fopen("inputHostNames.txt", "r");
+	if( argc > 1 ){
+		printf("Reading from file: %s\n", argv[1]);
+		inputFile = fopen(argv[1], "r");
+	} else {
+		printf("Reading from file: %s\n", defaultInput);
+		inputFile = fopen(defaultInput, "r");
+	}
 
     if( inputFile == NULL ){
         fprintf(stderr, "Cannot open input file!\n");
+		puts("Press ENTER to exit");
+		getchar();
         exit(1);
     }
 
     outputFile = fopen("validHostNames.txt", "w");
+	unpingable = fopen("unpingable.txt", "w");
     
     while( fscanf(inputFile, "%s", &IP) != EOF ){
-        if( pinging(IP) ){
+        if( pingable(IP) ){
             printf("%s Is Reachable!\n", IP);
             fprintf(outputFile, "%s\n", IP);
-        }
+        } else {
+			fprintf(unpingable, "%s\n", IP);
+		}
     }
 
     fclose(outputFile);
@@ -53,18 +79,20 @@ int main(int argc, char *argv[]){
 }
 
 
-bool pinging(char* IP){
+bool pingable(char* IP){
+#ifdef _WIN32
+    // Works for Windows
     unsigned char toCommandLine[50] = "ping -n 1 ";
+#else
+    // Works for Linux/BSD/Macintosh/Unix
+    unsigned char toCommandLine[50] = "ping -c 1 ";
+#endif
+
     int response;
 
-    int i;
-    for(i = 0; IP[i] != '\0'; i++){
-        toCommandLine[i + 10] = IP[i];
-    }
-
+	strcat(toCommandLine, IP);
     response = system(toCommandLine);
     
-
     if( response == 0 ){
         return true;
     }
