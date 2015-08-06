@@ -91,7 +91,7 @@ bool pingable(char* IP){
     int response;
 
 	strcat(toCommandLine, IP);
-    response = system(toCommandLine);
+	response = system(toCommandLine);
     
     if( response == 0 ){
         return true;
