@@ -93,6 +93,7 @@ bool pingable(char* IP){
 	strcat(toCommandLine, IP);
 	response = system(toCommandLine);
     
+    // If ping is successful
     if( response == 0 ){
         return true;
     }
