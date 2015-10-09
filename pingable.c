@@ -160,7 +160,7 @@ bool pingable(unsigned char* IP){
     unsigned char toCommandLine[50] = "ping -n 1 ";
 #else
     // Works for Linux
-    unsigned char toCommandLine[50] = "ping -c 1 ";
+    unsigned char toCommandLine[50] = "ping -c 1 -W 1 ";
 #endif
 
     int response;
