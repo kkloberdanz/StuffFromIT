@@ -47,6 +47,13 @@
 #include <string.h>
 #endif
 
+#ifdef __APPLE__
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#endif
+
 #include <stdbool.h>
 
 bool pingable(unsigned char*);
@@ -54,8 +61,8 @@ bool pingable(unsigned char*);
 int main(int argc, char *argv[]){
     unsigned char IP[30];
     unsigned char junk[30];
-	
-	const char* defaultInput = "inputHostNames.txt";
+    
+    const char* defaultInput = "inputHostNames.txt";
     char inputFileName[30] = "";
 
 
@@ -73,10 +80,10 @@ int main(int argc, char *argv[]){
         strcat( inputFileName, defaultInput );
     } else if( (argc == 2) || (argc == 4) ){
         strcat( inputFileName, argv[1] );
-	} else {
+    } else {
         puts("ERROR: and invalid number of arguments was specified");
         exit(1);
-	}
+    }
 
     if( argc == 4 ){
         /* strcmp returns 0 if strings are the same */
@@ -93,7 +100,7 @@ int main(int argc, char *argv[]){
     printf("Reading from file: %s\n", inputFileName);
     firstInputFile = fopen( inputFileName, "r" );
 
-	unpingable = fopen("unpingable.txt", "w");
+    unpingable = fopen("unpingable.txt", "w");
     
     /*
      * Determines how large the file is by counting each word
@@ -158,9 +165,15 @@ bool pingable(unsigned char* IP){
 #ifdef _WIN32
     // Works for Windows
     unsigned char toCommandLine[50] = "ping -n 1 ";
-#else
+#endif
+
+#ifdef linux
     // Works for Linux
     unsigned char toCommandLine[50] = "ping -c 1 -W 1 ";
+#endif
+
+#ifdef __APPLE__
+    unsigned char toCommandLine[50] = "ping -c 1 -t 1 ";
 #endif
 
     int response;
