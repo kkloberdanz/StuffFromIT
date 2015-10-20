@@ -66,7 +66,8 @@ int main(int argc, char *argv[]){
     char inputFileName[30] = "";
 
 
-    FILE *firstInputFile, *inputFile, *outputFile, *unpingable;
+    //FILE *firstInputFile, *inputFile, *outputFile, *unpingable;
+    FILE *firstInputFile, *inputFile, *outputFile;
 
     /*
      * If another file is specified from the command line,
@@ -97,10 +98,14 @@ int main(int argc, char *argv[]){
         outputFile = fopen( "validHostNames.txt", "w" );
     }
 
-    printf("Reading from file: %s\n", inputFileName);
-    firstInputFile = fopen( inputFileName, "r" );
 
-    unpingable = fopen("unpingable.txt", "w");
+    if( !(firstInputFile = fopen( inputFileName, "r" )) ){
+        puts("ERROR: No input file. Either specify a file , or create a file in this directory called 'inputHostNames.txt'");
+        exit(1);
+    }
+    printf("Reading from file: %s\n", inputFileName);
+
+    //unpingable = fopen("unpingable.txt", "w");
     
     /*
      * Determines how large the file is by counting each word
@@ -153,7 +158,7 @@ int main(int argc, char *argv[]){
 
     fclose(inputFile);
     fclose(outputFile);
-    fclose(unpingable);
+    //fclose(unpingable);
     puts("Press ENTER to exit");
     getchar();
 
